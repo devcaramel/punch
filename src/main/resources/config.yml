@@ -1,0 +1,2 @@
+# The maximum strength that can be applied to the player's velocity upon command.
+punch-strength-maximum: 10
