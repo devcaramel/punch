@@ -1,6 +1,6 @@
 // LICENSE - The MIT License (MIT)
 
-package dev.wither.punch;
+package dev.caramel.punch;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
