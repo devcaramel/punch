@@ -1,4 +1,2 @@
 # punch
-Punch a player into the sky.
-
-Very simply, very noice. Bully your friends with this.
+Get a punching stick to send enemies to another dimension.

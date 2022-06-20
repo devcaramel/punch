@@ -1,2 +1,8 @@
-# The maximum strength that can be applied to the player's velocity upon command.
-punch-strength-maximum: 10
+# The minimum velocity that can be applied to the player upon punching.
+minimum-punch-strength: 5
+
+# The maximum velocity that can be applied to the player upon punching.
+maximum-punch-strength: 20
+
+# The vertical velocity applied to the player upon punching.
+vertical-strength: 10

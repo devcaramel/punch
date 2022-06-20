@@ -3,7 +3,7 @@ version: '${project.version}'
 main: dev.caramel.punch.Punch
 api-version: 1.18
 authors: [ Caramel ]
-description: Plugin to make players go up when they punch another player.
+description: Get a punching stick to send enemies to another dimension.
 commands:
   punch:
-    description: Simulate punching a player by yeeting them into the sky.
+    description: Get a punching stick to send enemies to another dimension.

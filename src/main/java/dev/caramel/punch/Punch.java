@@ -3,24 +3,27 @@
 package dev.caramel.punch;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.checkerframework.common.reflection.qual.GetClass;
 
 import java.security.SecureRandom;
 import java.util.Random;
 
-/**
- * Punch is a plugin that will launch a player in the direction they are facing.
- */
 public final class Punch extends JavaPlugin implements Listener, CommandExecutor {
+
+    public final Random RANDOM = new SecureRandom();
 
     @Override
     public void onEnable() {
@@ -32,63 +35,74 @@ public final class Punch extends JavaPlugin implements Listener, CommandExecutor
 
     }
 
+    @EventHandler
+    public void onPunch(EntityDamageByEntityEvent event) {
+
+        if (event.getDamager() instanceof Player attacker) {
+
+            ItemStack weapon = attacker.getInventory().getItemInMainHand();
+
+            boolean isStick = weapon.getType() == Material.STICK;
+            boolean matchingName = weapon.getItemMeta().getDisplayName().equals(ChatColor.RED + "Punching Stick");
+
+            if (isStick && matchingName) {
+                punch(event.getEntity(), attacker);
+            }
+
+        }
+
+    }
+
     @Override
-    public void onDisable() {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+        if (sender instanceof Player player) {
+
+            ItemStack stick = new ItemStack(Material.STICK);
+
+            ItemMeta meta = stick.getItemMeta();
+            meta.setDisplayName(ChatColor.RED + "Punching Stick");
+
+            stick.setItemMeta(meta);
+
+            player.getInventory().addItem(stick);
+
+        } else {
+
+            sender.sendMessage("Only players can use this command.");
+
+        }
+
+        return true;
+
+    }
+
+    public void punch(Entity defender, Player attacker) {
+
+        int punchStrength = RANDOM.nextInt(getMaximumVelocity()-getMinimumVelocity()+1)+getMinimumVelocity();
+
+        Vector upward = new Vector(0, getVerticalVelocity(), 0);
+
+        defender.setVelocity(attacker.getEyeLocation().getDirection().multiply(punchStrength).add(upward));
+
+    }
+
+    private int getMinimumVelocity() {
+
+        return getConfig().getInt("minimum-punch-strength", 5);
 
     }
 
     private int getMaximumVelocity() {
 
-        try {
-
-            return getConfig().getInt("punch-strength-maximum");
-
-        } catch (NullPointerException npe) {
-
-            return 10;
-
-        }
+        return getConfig().getInt("maximum-punch-strength", 20);
 
     }
 
-    @EventHandler
-    public void onPunch(EntityDamageByEntityEvent event) {
+    private int getVerticalVelocity() {
 
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-
-            Player attacker = (Player) event.getDamager();
-            Player defender = (Player) event.getEntity();
-
-            int punchStrength = RANDOM.nextInt(getMaximumVelocity())+1;
-
-            defender.setVelocity(defender.getVelocity().add(new Vector(0, punchStrength, 0)));
-            attacker.sendMessage("You have yeeted " + defender.getName() + " into the sky.");
-
-        }
+        return getConfig().getInt("vertical-strength", 10);
 
     }
-    public static final Random RANDOM = new SecureRandom();
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        String name = args[0];
-
-        Player player = Bukkit.getPlayer(name);
-
-        if (player == null) {
-
-            sender.sendMessage("That player is not online you dumb shit.");
-            return true;
-
-        }
-
-        int punchStrength = RANDOM.nextInt(getMaximumVelocity())+1;
-
-        player.setVelocity(player.getVelocity().add(new Vector(0, punchStrength, 0)));
-
-        return true;
-    }
-
 
 }
